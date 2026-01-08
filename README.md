@@ -27,7 +27,7 @@ A full-stack web application for stock analysis, AI-powered price predictions, p
 
 ## 🛠️ Tech Stack
 
-**Frontend:** React 18, Vite, TailwindCSS, React Query, Zustand, Recharts  
+**Frontend:** React 18, Vite, TailwindCSS, React Query, Zustand, ApexCharts  
 **Backend:** FastAPI, SQLAlchemy, SQLite, Redis, Prophet, bcrypt  
 **APIs:** yfinance, Finnhub, Alpha Vantage, ExchangeRate-API  
 **Hosting:** Vercel (Frontend), Render (Backend), Supabase (Database), Upstash (Redis)
