@@ -8,10 +8,12 @@ Complete step-by-step guide to deploy your backend on Render (100% FREE).
 
 Before starting, make sure you have:
 
-- ✅ GitHub account
+- ✅ GitHub account (or GitLab/Bitbucket as alternative)
 - ✅ Your project pushed to GitHub: `https://github.com/aakash688/stockpredict002`
 - ✅ Supabase account (for database) - [See Supabase Setup](#supabase-setup)
 - ✅ Upstash Redis URL (already have it)
+
+**⚠️ GitHub Account Flagged?** See [RENDER_MANUAL_DEPLOY.md](RENDER_MANUAL_DEPLOY.md) for alternatives.
 
 ---
 
