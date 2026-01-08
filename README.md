@@ -87,6 +87,7 @@ gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
 ## 📚 Documentation
 
 - **[INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md)** - Complete installation guide for fresh setup
+- **[FREE_HOSTING_GUIDE.md](FREE_HOSTING_GUIDE.md)** - 🆓 **Complete free hosting guide (Vercel + Render + Supabase)**
 - **[USER_GUIDE.md](USER_GUIDE.md)** - How to use the application
 - **[API_DOCUMENTATION.md](API_DOCUMENTATION.md)** - Complete API structure and usage guide
 - **[IMPLEMENTATION_DETAILS.md](IMPLEMENTATION_DETAILS.md)** - Technical implementation details, architecture, and logic
