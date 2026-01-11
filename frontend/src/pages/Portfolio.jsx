@@ -12,6 +12,26 @@ import { useCurrencyStore } from '../store/currencyStore'
 import { useCurrencyConversion } from '../hooks/useCurrency'
 import { motion, AnimatePresence } from 'framer-motion'
 
+// Helper component to show estimated cost with currency conversion
+function EstimatedCostPreview({ quantity, price, currency }) {
+  const totalUSD = quantity * price
+  const convertedTotal = useCurrencyConversion(totalUSD)
+  
+  return (
+    <div className="p-4 bg-card/50 rounded-lg border border-border">
+      <div className="text-sm text-muted-foreground mb-1">Estimated Total Cost</div>
+      <div className="text-xl font-bold text-foreground">
+        {formatCurrency(convertedTotal, currency)}
+      </div>
+      {currency !== 'USD' && (
+        <div className="text-xs text-muted-foreground mt-1">
+          (${totalUSD.toFixed(2)} USD)
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function Portfolio() {
   const queryClient = useQueryClient()
   const [showAddForm, setShowAddForm] = useState(false)
@@ -230,12 +250,11 @@ export default function Portfolio() {
 
                       {/* Estimated Value Preview */}
                       {selectedStock && quantity && purchasePrice && (
-                        <div className="p-4 bg-card/50 rounded-lg border border-border">
-                          <div className="text-sm text-muted-foreground mb-1">Estimated Total Cost</div>
-                          <div className="text-xl font-bold text-foreground">
-                            ${(parseFloat(quantity) * parseFloat(purchasePrice)).toFixed(2)}
-                          </div>
-                        </div>
+                        <EstimatedCostPreview 
+                          quantity={parseFloat(quantity)} 
+                          price={parseFloat(purchasePrice)} 
+                          currency={currency}
+                        />
                       )}
 
                       {/* Submit Button */}
