@@ -528,26 +528,63 @@ def get_news(symbol: str, limit: int = 10) -> List[NewsItem]:
 
 
 def convert_currency(amount: float, from_currency: str, to_currency: str) -> Dict:
-    cache_key = f"currency:{from_currency}:{to_currency}"
+    # If same currency, no conversion needed
+    if from_currency.upper() == to_currency.upper():
+        return {
+            "amount": amount,
+            "from_currency": from_currency,
+            "to_currency": to_currency,
+            "exchange_rate": 1.0,
+            "converted_amount": amount
+        }
+    
+    cache_key = f"currency:{from_currency.upper()}:{to_currency.upper()}"
     cached = get_cache(cache_key)
     if cached:
-        return {**cached, "converted_amount": amount * cached["exchange_rate"]}
+        return {
+            "amount": amount,
+            "from_currency": from_currency,
+            "to_currency": to_currency,
+            "exchange_rate": cached["exchange_rate"],
+            "converted_amount": amount * cached["exchange_rate"]
+        }
+    
+    rate = 1.0  # Default rate
     
     try:
+        # Try ExchangeRate API first
         if settings.EXCHANGE_RATE_API_KEY:
-            url = f"https://v6.exchangerate-api.com/v6/{settings.EXCHANGE_RATE_API_KEY}/pair/{from_currency}/{to_currency}"
-            response = requests.get(url, timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                rate = data.get('conversion_rate', 1.0)
-        else:
-            # Fallback: use yfinance for currency conversion
-            ticker = yf.Ticker(f"{from_currency}{to_currency}=X")
-            data = ticker.history(period="1d")
-            if not data.empty:
-                rate = float(data['Close'].iloc[-1])
-            else:
-                rate = 1.0
+            try:
+                url = f"https://v6.exchangerate-api.com/v6/{settings.EXCHANGE_RATE_API_KEY}/pair/{from_currency.upper()}/{to_currency.upper()}"
+                response = requests.get(url, timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('result') == 'success':
+                        rate = data.get('conversion_rate', 1.0)
+            except Exception as e:
+                print(f"ExchangeRate API error: {e}")
+        
+        # Fallback: use yfinance for currency conversion if rate is still 1.0
+        if rate == 1.0:
+            try:
+                ticker = yf.Ticker(f"{from_currency.upper()}{to_currency.upper()}=X")
+                hist = ticker.history(period="5d", timeout=10)
+                if hist is not None and not hist.empty and len(hist) > 0:
+                    rate = float(hist['Close'].iloc[-1])
+            except Exception as e:
+                print(f"yfinance currency conversion error: {e}")
+        
+        # If still no rate, try common conversions
+        if rate == 1.0:
+            common_rates = {
+                ('USD', 'INR'): 83.5,
+                ('INR', 'USD'): 0.012,
+                ('USD', 'EUR'): 0.92,
+                ('EUR', 'USD'): 1.09,
+                ('USD', 'GBP'): 0.79,
+                ('GBP', 'USD'): 1.27,
+            }
+            rate = common_rates.get((from_currency.upper(), to_currency.upper()), 1.0)
         
         result = {
             "amount": amount,
@@ -557,14 +594,30 @@ def convert_currency(amount: float, from_currency: str, to_currency: str) -> Dic
             "converted_amount": amount * rate
         }
         
-        set_cache(cache_key, {"exchange_rate": rate}, ttl=3600)
+        # Cache the rate
+        if rate != 1.0:
+            set_cache(cache_key, {"exchange_rate": rate}, ttl=3600)
+        
         return result
-    except Exception:
+        
+    except Exception as e:
+        print(f"Currency conversion error: {e}")
+        # Fallback with common rates
+        common_rates = {
+            ('USD', 'INR'): 83.5,
+            ('INR', 'USD'): 0.012,
+            ('USD', 'EUR'): 0.92,
+            ('EUR', 'USD'): 1.09,
+            ('USD', 'GBP'): 0.79,
+            ('GBP', 'USD'): 1.27,
+        }
+        rate = common_rates.get((from_currency.upper(), to_currency.upper()), 1.0)
+        
         return {
             "amount": amount,
             "from_currency": from_currency,
             "to_currency": to_currency,
-            "exchange_rate": 1.0,
-            "converted_amount": amount
+            "exchange_rate": rate,
+            "converted_amount": amount * rate
         }
 
