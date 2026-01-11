@@ -24,6 +24,7 @@ class PortfolioResponse(BaseModel):
 class PortfolioItem(BaseModel):
     id: int
     stock_symbol: str
+    stock_name: Optional[str] = None
     quantity: float
     purchase_price: float
     purchase_date: date

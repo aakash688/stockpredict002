@@ -24,7 +24,9 @@ async def get_portfolio(
     result = []
     for item in portfolio_items:
         try:
-            current_price = get_real_time_price(item.stock_symbol)
+            stock_info = get_stock_info(item.stock_symbol)
+            current_price = stock_info.current_price
+            stock_name = stock_info.name
             total_cost = item.quantity * item.purchase_price
             current_value = item.quantity * current_price
             profit_loss = current_value - total_cost
@@ -33,6 +35,7 @@ async def get_portfolio(
             result.append(PortfolioItem(
                 id=item.id,
                 stock_symbol=item.stock_symbol,
+                stock_name=stock_name,
                 quantity=item.quantity,
                 purchase_price=item.purchase_price,
                 purchase_date=item.purchase_date,
@@ -46,6 +49,7 @@ async def get_portfolio(
             result.append(PortfolioItem(
                 id=item.id,
                 stock_symbol=item.stock_symbol,
+                stock_name=None,
                 quantity=item.quantity,
                 purchase_price=item.purchase_price,
                 purchase_date=item.purchase_date
