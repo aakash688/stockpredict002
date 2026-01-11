@@ -5,12 +5,14 @@ import StockSearch from '../components/stock/StockSearch'
 import { useWatchlist, useAddToWatchlist } from '../hooks/useWatchlist'
 import { Loader2, Plus } from 'lucide-react'
 import { useState } from 'react'
+import { useToast } from '../components/ui/Toast'
 
 export default function Watchlist() {
   const { data: watchlist, isLoading } = useWatchlist()
   const addToWatchlist = useAddToWatchlist()
   const [showAddForm, setShowAddForm] = useState(false)
   const [selectedSymbol, setSelectedSymbol] = useState('')
+  const toast = useToast()
 
   const handleAdd = () => {
     if (selectedSymbol) {
@@ -18,8 +20,13 @@ export default function Watchlist() {
         { symbol: selectedSymbol, notes: null },
         {
           onSuccess: () => {
+            toast.success(`${selectedSymbol} added to watchlist!`)
             setSelectedSymbol('')
             setShowAddForm(false)
+          },
+          onError: (error) => {
+            const message = error.response?.data?.detail || 'Failed to add to watchlist'
+            toast.error(message)
           },
         }
       )

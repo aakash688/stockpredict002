@@ -7,7 +7,7 @@ from app.dependencies import get_current_user
 from app.models.user import User
 from app.models.portfolio import Portfolio
 from app.schemas.portfolio import PortfolioCreate, PortfolioResponse, PortfolioItem
-from app.services.stock_service import get_real_time_price
+from app.services.stock_service import get_real_time_price, get_stock_info
 
 router = APIRouter()
 

@@ -7,12 +7,14 @@ import { useCurrencyStore } from '../store/currencyStore'
 import { useThemeStore } from '../store/themeStore'
 import { User, Lock, Settings, Trash2, Save } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useToast } from '../components/ui/Toast'
 
 export default function Profile() {
   const { user } = useAuth()
   const { theme, toggleTheme } = useThemeStore()
   const { currency, setCurrency } = useCurrencyStore()
   const [activeTab, setActiveTab] = useState('info')
+  const toast = useToast()
   
   // Password change state
   const [currentPassword, setCurrentPassword] = useState('')
@@ -28,17 +30,20 @@ export default function Profile() {
     
     if (newPassword !== confirmPassword) {
       setPasswordError('New passwords do not match')
+      toast.error('New passwords do not match')
       return
     }
     
     if (newPassword.length < 8) {
       setPasswordError('Password must be at least 8 characters')
+      toast.error('Password must be at least 8 characters')
       return
     }
     
     // TODO: Implement password change API call
     // For now, show success
     setPasswordSuccess(true)
+    toast.success('Password changed successfully!')
     setCurrentPassword('')
     setNewPassword('')
     setConfirmPassword('')
@@ -248,9 +253,7 @@ export default function Profile() {
                 <div className="pt-6 border-t border-white/10">
                   <button
                     onClick={() => {
-                      if (confirm('Are you sure you want to save these preferences?')) {
-                        alert('Preferences saved successfully!')
-                      }
+                      toast.success('Preferences saved successfully!')
                     }}
                     className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition flex items-center"
                   >

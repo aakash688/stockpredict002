@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useAuthStore } from './store/authStore'
 import { useThemeStore } from './store/themeStore'
 import { AnimatePresence } from 'framer-motion'
+import { ToastProvider } from './components/ui/Toast'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -34,56 +35,58 @@ function App() {
   }, [theme])
 
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/stock/:symbol" element={<StockDetail />} />
-        <Route
-          path="/watchlist"
-          element={
-            <ProtectedRoute>
-              <Watchlist />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/portfolio"
-          element={
-            <ProtectedRoute>
-              <Portfolio />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute requireAdmin>
-              <Admin />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/404" element={<NotFound />} />
-        <Route path="*" element={<Navigate to="/404" replace />} />
-      </Routes>
-    </AnimatePresence>
+    <ToastProvider>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/stock/:symbol" element={<StockDetail />} />
+          <Route
+            path="/watchlist"
+            element={
+              <ProtectedRoute>
+                <Watchlist />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portfolio"
+            element={
+              <ProtectedRoute>
+                <Portfolio />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<Navigate to="/404" replace />} />
+        </Routes>
+      </AnimatePresence>
+    </ToastProvider>
   )
 }
 

@@ -4,6 +4,7 @@ import { useCurrencyStore } from '../../store/currencyStore'
 import { useCurrencyConversion } from '../../hooks/useCurrency'
 import { TrendingUp, TrendingDown, X } from 'lucide-react'
 import { useRemoveFromWatchlist } from '../../hooks/useWatchlist'
+import { useToast } from '../ui/Toast'
 
 export default function WatchlistItem({ item }) {
   const removeMutation = useRemoveFromWatchlist()
@@ -11,12 +12,20 @@ export default function WatchlistItem({ item }) {
   const { currency } = useCurrencyStore()
   const convertedPrice = useCurrencyConversion(item.current_price)
   const convertedChange = useCurrencyConversion(item.change || 0)
+  const toast = useToast()
 
   const handleRemove = (e) => {
     e.preventDefault()
     e.stopPropagation()
     if (confirm('Remove from watchlist?')) {
-      removeMutation.mutate(item.id)
+      removeMutation.mutate(item.id, {
+        onSuccess: () => {
+          toast.success(`${item.stock_symbol} removed from watchlist`)
+        },
+        onError: () => {
+          toast.error('Failed to remove from watchlist')
+        },
+      })
     }
   }
 

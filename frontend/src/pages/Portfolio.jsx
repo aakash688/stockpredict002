@@ -6,10 +6,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { portfolioService } from '../services/portfolioService'
 import { formatCurrency } from '../utils/formatters'
 import { Loader2, Plus, TrendingUp, TrendingDown } from 'lucide-react'
+import { useToast } from '../components/ui/Toast'
 
 export default function Portfolio() {
   const queryClient = useQueryClient()
   const [showAddForm, setShowAddForm] = useState(false)
+  const toast = useToast()
   const { data: portfolio, isLoading } = useQuery({
     queryKey: ['portfolio'],
     queryFn: () => portfolioService.getPortfolio(),
@@ -19,6 +21,11 @@ export default function Portfolio() {
     mutationFn: (itemId) => portfolioService.removeFromPortfolio(itemId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['portfolio'] })
+      toast.success('Position removed successfully')
+    },
+    onError: (error) => {
+      const message = error.response?.data?.detail || 'Failed to remove position'
+      toast.error(message)
     },
   })
 
@@ -27,6 +34,11 @@ export default function Portfolio() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['portfolio'] })
       setShowAddForm(false)
+      toast.success('Position added to portfolio!')
+    },
+    onError: (error) => {
+      const message = error.response?.data?.detail || 'Failed to add position. Please check the stock symbol.'
+      toast.error(message)
     },
   })
 

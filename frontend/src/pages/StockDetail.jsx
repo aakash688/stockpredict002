@@ -10,11 +10,13 @@ import { useCurrencyStore } from '../store/currencyStore'
 import { useCurrencyConversion } from '../hooks/useCurrency'
 import { formatCurrency, formatPercent, formatDateTime, formatMarketCap, formatVolume } from '../utils/formatters'
 import { TrendingUp, TrendingDown, Plus, Loader2, Newspaper } from 'lucide-react'
+import { useToast } from '../components/ui/Toast'
 
 export default function StockDetail() {
   const { symbol } = useParams()
   const [period, setPeriod] = useState('1mo')
   const { currency } = useCurrencyStore()
+  const toast = useToast()
   const { data: stockInfo, isLoading: infoLoading } = useStockInfo(symbol)
   const convertedPrice = useCurrencyConversion(stockInfo?.current_price || 0)
   const convertedChange = useCurrencyConversion(stockInfo?.change || 0)
@@ -28,7 +30,11 @@ export default function StockDetail() {
       { symbol, notes: null },
       {
         onSuccess: () => {
-          alert('Added to watchlist!')
+          toast.success(`${symbol} added to watchlist!`)
+        },
+        onError: (error) => {
+          const message = error.response?.data?.detail || 'Failed to add to watchlist'
+          toast.error(message)
         },
       }
     )
