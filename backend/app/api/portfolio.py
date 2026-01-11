@@ -73,35 +73,16 @@ async def add_to_portfolio(
             detail="Invalid stock symbol format"
         )
     
-    # Try to verify stock exists, but don't fail if API is rate-limited
-    # Since user selected from search dropdown, the symbol is likely valid
-    try:
-        get_stock_info(symbol)
-    except ValueError as e:
-        error_msg = str(e)
-        # If it's a rate limit issue, allow the add anyway (user selected from valid search)
-        if "rate" in error_msg.lower() or "unavailable" in error_msg.lower() or "wait" in error_msg.lower():
-            # Log but proceed - user selected from valid search dropdown
-            print(f"Warning: Could not verify stock {symbol} due to API limits, proceeding anyway")
-        else:
-            # Genuine stock not found
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Stock '{symbol}' not found. Please verify the symbol is correct."
-            )
-    except Exception as e:
-        # For other exceptions, also be lenient if it looks like an API issue
-        error_msg = str(e).lower()
-        if "timeout" in error_msg or "connection" in error_msg or "429" in error_msg:
-            print(f"Warning: Could not verify stock {symbol} due to API error, proceeding anyway")
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Could not verify stock '{symbol}'. Please try again."
-            )
-    
-    # Check if already in portfolio (optional - allow multiple entries for same stock)
-    # Users might want to track different purchases separately
+    # Skip API validation - user already selected from search dropdown
+    # The search dropdown only shows valid stocks, so we can trust the input
+    # This also avoids issues with Yahoo Finance rate limiting
+    # 
+    # If you want to re-enable validation, uncomment the block below:
+    # try:
+    #     get_stock_info(symbol)
+    # except Exception as e:
+    #     print(f"Warning: Could not verify stock {symbol}: {e}")
+    #     # Proceed anyway since user selected from valid search
     
     portfolio_item = Portfolio(
         user_id=current_user.id,
