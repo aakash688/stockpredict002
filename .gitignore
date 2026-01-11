@@ -2,6 +2,21 @@
 imp.txt
 importnatdata.txt
 
+# SSH Keys (NEVER commit these!)
+*.pem
+*.key
+*.ppk
+*_rsa
+*_dsa
+*_ecdsa
+*_ed25519
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+cpanel_key
+ssh_key
+
 # Python
 __pycache__/
 *.py[cod]
